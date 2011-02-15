@@ -293,27 +293,14 @@ class MainWindow(QtGui.QWidget):
         settings.open()
         settings.exec_()
         
-    def getConverted(self, byte):
-        if isinstance(byte, int) or isinstance(byte, long):
-            if byte < 1024:
-                return "%d B" % byte
-            elif byte < 1024**2:
-                return "%.2f KB" % (byte/1024.0)
-            elif byte < 1024**3:
-                return "%.2f MB" % (byte/1024.0**2)
-            elif byte < 1024**4:
-                return "%.2f GB" % (byte/1024.0**3)
-        else:
-            return byte
-        
     def update(self, data):
         if not data['error']:
-            limit1 = self.getConverted(data['window1day']['current'])
-            limit4 = self.getConverted(data['window4day']['current'])
+            limit1 = utils.getConverted(data['window1day']['current'])
+            limit4 = utils.getConverted(data['window4day']['current'])
+            self.host_lb.setText("Host : %s" % data['host'])
         else:
             limit1 = "Hiba"
-            limit4 = "Hiba" 
-        self.host_lb.setText("Host : %s" % data['host'])
+            limit4 = "Hiba"
         self.win1_data_lb.setText(limit1)
         self.win4_data_lb.setText(limit4)
         self.tray.setToolTip("%s / 16 GB, %s / 32 GB" % (limit1, limit4))

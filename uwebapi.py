@@ -27,7 +27,7 @@ class uWebAPI:
         self.set_authentication()
     
     def set_authentication(self):
-        """ Az azonosításhoz szükséges fejléc és a cookie tárolásához szükséges tároló beállítása."""
+        """ Az azonosításhoz szükséges fejléc, és a cookie tárolásához szükséges tároló beállítása."""
         config = utils.getConfig()
         self.headers =  {"Authorization" : "Basic %s" % config["webui"]["auth"]}
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))

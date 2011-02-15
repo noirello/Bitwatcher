@@ -8,9 +8,13 @@ import uwebapi
 import utils
 
 class Connector(QtCore.QThread):
+    """ Kapcsolatok kezelése, külön szálban"""
+    
+    #Signalok deklaráléása - alapból az __init__()-en kívül kell, mert egyébként nem működik 
     refreshed = QtCore.Signal(dict)
     uconnected = QtCore.Signal(bool)
     statusSig = QtCore.Signal(int)
+    
     def __init__(self, forceSig):
         QtCore.QThread.__init__(self)
         self.api = uwebapi.uWebAPI()
@@ -20,6 +24,10 @@ class Connector(QtCore.QThread):
         forceSig.connect(self.forcing)
     
     def run(self):
+        """
+            Az adatok ismétlődő lekérdezése. 
+            Az adatokat a self.refreshed signallal kerülnek átadásra.
+        """
         config = utils.getConfig()
         checking_u = True 
         while not self.stopped:
@@ -30,10 +38,11 @@ class Connector(QtCore.QThread):
                     self.data['error'] = False
                     self.data['window1day']['current'] = int(self.data['window1day']['current'])
                     self.data['window4day']['current'] = int(self.data['window4day']['current'])
-                    self.checkingTransfer()
+                    self.checking_transfer()
                     self.refreshed.emit(self.data)
+                    #Kapcsolattesztelés minden 2. körben.
                     if checking_u: 
-                        self.checkingConnect()
+                        self.checking_connect()
                         checking_u = False
                     else:
                         checking_u = True
@@ -43,7 +52,9 @@ class Connector(QtCore.QThread):
                     self.refreshed.emit({'error' : True})
             time.sleep(config["netwatcher"]["refresh_time"])
     
-    def checkingConnect(self):
+    
+    def checking_connect(self):
+        """ A uTorrent webes kapcsolatának ellenőrzése."""
         self.api.set_authentication()
         try:
             self.api.get_torrents()
@@ -51,7 +62,8 @@ class Connector(QtCore.QThread):
         except uwebapi.ConnectionError:
             self.uconnected.emit(False)
     
-    def checkingTransfer(self):
+    def checking_transfer(self):
+        """ A forgalomkorlátok, státuszok ellenőrzése."""
         config = utils.getConfig()
         if not self.forced:
             if (self.data['window1day']['current'] >= config["netwatcher"]["one_day_limit"]*1024**2) or (self.data['window4day']['current'] >= config["netwatcher"]["four_day_limit"]*1024**2):
@@ -67,7 +79,7 @@ class Connector(QtCore.QThread):
                 except uwebapi.ConnectionError:
                     self.uconnected.emit(False)
         else:
-            if self.status == 1:
+            if self.status == 1 or self.status == 2:
                 try:
                     self.api.deactivate()
                     self.status = 2
@@ -82,10 +94,12 @@ class Connector(QtCore.QThread):
         self.statusSig.emit(self.status)
     
     def forcing(self, frc):
+        """ Erőltetett státusz beállítása."""
         self.forced = frc
-        self.checkingTransfer()
+        self.checking_transfer()
     
     def stop(self):
+        """ A szál leállítása."""
         self.stopped = True
         self.terminate()
         self.exit()
