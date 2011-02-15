@@ -5,3 +5,5 @@
 		+ Shortcut készítése, bemásolása a Startup mappába.
 		+ Processlist figyelése, hogy ne iduljon el többször az alkalmazás
 	+ Egyéni GUI-felület készítése (in progress - lehet lesz belőle valami :) )
+	- A torrentek tárolásánál a státusz szerint üritse a listát vagy adjon hozzá!
+	- Ne csak a seedelt státuszt figyelje, hanem a seedhez sorban állt is!
