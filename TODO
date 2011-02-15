@@ -1,0 +1,7 @@
+﻿TODO - 2011-02-15:
+	+ E-mail küldés lehetősége.
+		SMTP.docmd(cmd[, argstring]) - remélhetőleg a várzsszó a Digest alapú azonosításnak
+	+ Windows specifikus funkciók (fordítási problémák vannak vele):
+		+ Shortcut készítése, bemásolása a Startup mappába.
+		+ Processlist figyelése, hogy ne iduljon el többször az alkalmazás
+	+ Egyéni GUI-felület készítése (in progress - lehet lesz belőle valami :) )
